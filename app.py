@@ -17,7 +17,7 @@ def transcribe(audio):
     result = whisper.decode(model, mel, options)
     return result.text
 
-app = Flask(_name_)
+app = Flask(__name__)
 
 @app.route('/',methods = ["POST"])
 def welcome():
@@ -32,5 +32,5 @@ def welcome():
     english = translator.translate(test).text
     return jsonify({"Hindi": test,"Hinglish": converted_text,"English":english})
 
-if _name_ == '_main_':
+if __name__ == '_main_':
     app.run(host = '0.0.0.0',port = 8000)
