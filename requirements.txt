@@ -22,7 +22,7 @@ duplicity
 fasteners
 filelock
 Flask
-future=
+future
 googletrans==3.1.0a0
 h11
 h2
