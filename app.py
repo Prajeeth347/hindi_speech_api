@@ -28,7 +28,7 @@ def welcome():
         file.write(binary)
     test = transcribe('audio.wav')
     test = str(test)
-    converted_text = transliterate(test, sanscript.DEVANAGARI,sanscript.ITRANS)
+    converted_text = transliterate(test, sanscript.DEVANAGARI,sanscript.ITRANS).lower()
     english = translator.translate(test).text
     return jsonify({"Hindi": test,"Hinglish": converted_text,"English":english})
 
