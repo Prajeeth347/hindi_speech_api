@@ -2,4 +2,4 @@ Flask
 googletrans==3.1.0a0
 indic-transliteration
 jiwer
--U openai-whisper
+openai-whisper
