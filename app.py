@@ -32,10 +32,10 @@ def welcome():
     with open('audio.wav','wb') as file:
         binary = base64.b64decode(record)
         file.write(binary)
-        test = transcribe(file.name)
-        test = str(test)
-        converted_text = transliterate(test, sanscript.DEVANAGARI,sanscript.ITRANS)
-        converted_text = converted_text.lower()
+    test = transcribe(file.name)
+    test = str(test)
+    converted_text = transliterate(test, sanscript.DEVANAGARI,sanscript.ITRANS)
+    converted_text = converted_text.lower()
     return jsonify({'hindi':test,
                     'hinglish':converted_text})
 
