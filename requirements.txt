@@ -1,5 +1,4 @@
-Flask==2.3.2
-
+Flask
 googletrans==3.1.0a0
 indic-transliteration
 jiwer
