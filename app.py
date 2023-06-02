@@ -1,9 +1,12 @@
-from flask import Flask,request,jsonify
+import os
+import urllib.request
+from app import app
+from flask import Flask, request, redirect, jsonify
+from werkzeug.utils import secure_filename
 from indic_transliteration import sanscript
 from indic_transliteration.sanscript import transliterate
 import whisper
 import json
-import base64
 from googletrans import Translator
 
 model = whisper.load_model("small")
@@ -17,20 +20,37 @@ def transcribe(audio):
     result = whisper.decode(model, mel, options)
     return result.text
 
-app = Flask(__name__)
+ALLOWED_EXTENSIONS = set(['wav'])
 
-@app.route('/',methods = ["POST"])
-def welcome():
-    record= json.loads(request.data)
-    record = record['voice']
-    with open('audio.wav','wb') as file:
-        binary = base64.b64decode(record)
-        file.write(binary)
-    test = transcribe('audio.wav')
-    test = str(test)
-    converted_text = transliterate(test, sanscript.DEVANAGARI,sanscript.ITRANS).lower()
-    english = translator.translate(test).text
-    return jsonify({"Hindi": test,"Hinglish": converted_text,"English":english})
+def allowed_file(filename):
+	return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-if __name__ == '_main_':
+@app.route('/getfile', methods=['POST'])
+def upload_file():
+    if 'file' not in request.files:
+        resp = jsonify({'message' : 'No file part in the request'})
+        resp.status_code = 400
+        return resp
+    file = request.files['file']
+    if file.filename == '':
+        resp = jsonify({'message' : 'No file selected for uploading'})
+        resp.status_code = 400
+        return resp
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        filepath = os.path.join(os.getcwd(), filename)
+        file.save(filepath)
+        hindi = transcribe(filepath)
+        converted_text = transliterate(hindi, sanscript.DEVANAGARI,sanscript.ITRANS).lower()
+        english = translator.translate(hindi).text
+        resp = jsonify({"Hindi": hindi,"Hinglish": converted_text,"English":english})
+        resp.status_code = 200
+        return resp
+    else:
+        resp = jsonify({'message' : 'Allowed file types are txt, pdf, png, jpg, jpeg, gif'})
+        resp.status_code = 400
+        return resp
+
+
+if _name_ == "_main_":
     app.run(host = '0.0.0.0',port = 8000)
